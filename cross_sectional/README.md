@@ -9,7 +9,7 @@ into folders for each of the patients. Each patient's folder consists of:
 
 - Co-registered and bias corrected T1-weighted (T1W), contrast enhanced T1-weighted (T1WKS), T2-weighted (T2W) and FLAIR images 
 - Brain mask 
-- Consensus white matter lesion segmentations
+- Consensus white matter lesion segmentations (in FLAIR space)
 - RAW images in their original space 
 - Intra-study transform parameters
 
