@@ -31,6 +31,19 @@ below in any published work that uses this database.
 
 ![](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg)
 
+### Description
+This archive contains longitudinal Magnetic Resonance (MR) images 
+of Multiple Sclerosis (MS) patients with corresponding ground 
+truth segmentations of white matter lesion changes. Each patient 
+has been imaged twice on two separate occasions. The images are 
+grouped into folders for each of the patients. Each patient's 
+folder consists of:
+- Co-registered and N4 corrected T1-weighted, T2-weighted and FLAIR images for both MR studies 
+- Brain mask 
+- White matter lesion change mask
+- RAW images in their original space 
+- Intra-study transform parameters and transform parameters from RAW to common space
+
 ### References 
 The data is described in:
 Lesjak, Žiga, Franjo Pernuš, Boštjan Likar, and Žiga Špiclin. "Validation of White­Matter Lesion Change Detection Methods on a Novel Publicly Available MRI Image Database." Neuroinformatics (2016): 1-18.
