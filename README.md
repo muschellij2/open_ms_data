@@ -10,6 +10,8 @@ The database is released under the Creative-Commons
 Attribution (CC-BY) license. Please cite the references 
 below in any published work that uses this database.
 
+![](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg)
+
 ### References 
 The data is described in:
 Lesjak, Žiga, et al. "A novel public MR image dataset of multiple sclerosis patients with lesion segmentations based on multi-rater consensus." Neuroinformatics (2017): 1-13.
@@ -27,6 +29,7 @@ The database is released under the Creative-Commons
 Attribution (CC-BY) license. Please cite the references 
 below in any published work that uses this database.
 
+![](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg)
 
 ### References 
 The data is described in:
