@@ -7,11 +7,11 @@ Sclerosis (MS) patients with corresponding consensus based ground
 truth segmentations of white matter lesions. The images are grouped 
 into folders for each of the patients. Each patient's folder consists of:
 
-- Co-registered and bias corrected T1-weighted (T1W), contrast enhanced T1-weighted (T1WKS), T2-weighted (T2W) and FLAIR images 
-- Brain mask 
+- Co-registered and bias corrected T1-weighted (T1W), contrast enhanced T1-weighted (T1WKS), T2-weighted (T2W) and FLAIR images (co-registered to FLAIR space)
+- Brain mask (in FLAIR space)
 - Consensus white matter lesion segmentations (in FLAIR space)
 - RAW images in their original space 
-- Intra-study transform parameters
+- Intra-study transform parameters (rigid to FLAIR)
 
 To preserve patients' privacy **all images have been defaced**. 
 For more details please see the *References*.
