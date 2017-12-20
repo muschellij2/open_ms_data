@@ -41,15 +41,43 @@ x = list.files(
 mods = nii.stub(x, bn = TRUE)
 mods = recode(mods, "consensus_gt" = "Gold_Standard",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-x = paste0("[", mods, "](", x, ")")
 df = data_frame(file = x, mod = mods, id = basename(dirname(x)))
+cs_raw = as.data.frame(df)
+
+save(cs_raw, file = "cs_raw.rda", compress = "xz")
+df = df %>%
+  mutate(file = paste0("[", mod, "](", file, ")"))
+df = spread(df, key = mod, value = file)
+knitr::kable(df, col.names = rep("", ncol(df)))
+```
+
+
+### Slightly Processed/Coregistered Data
+
+These images were co-registered to the FLAIR and bias corrected and include a brain mask (in the FLAIR space.)
+```{r, echo=FALSE, message=FALSE}
+library(neurobase)
+library(dplyr)
+library(tidyr)
+x = list.files(
+  path = "cross_sectional/coregistered/", pattern = ".nii.gz", 
+  recursive = TRUE, full.names = TRUE)
+mods = nii.stub(x, bn = TRUE)
+mods = recode(mods, "consensus_gt" = "Gold_Standard",
+              brainmask = "Brain_Mask",
+       T1W = "T1", T1WKS = "T1Post", T2W = "T2")
+df = data_frame(file = x, mod = mods, id = basename(dirname(x)))
+cs_coreg = as.data.frame(df)
+save(cs_coreg, file = "cs_coreg.rda", compress = "xz")
+df = df %>%
+  mutate(file = paste0("[", mod, "](", file, ")"))
 df = spread(df, key = mod, value = file)
 knitr::kable(df, col.names = rep("", ncol(df)))
 ```
 
 ## Longitudinal data
 
-The cross-sectional data is from the "Longitudinal MR image database of Multiple Sclerosis patients with white matter lesion change segmentation" section of the website.  
+The longitudinal data is from the "Longitudinal MR image database of Multiple Sclerosis patients with white matter lesion change segmentation" section of the website.  
 
 This archive contains longitudinal Magnetic Resonance (MR) images of patients with Multiple Sclerosis (MS) with corresponding
 ground truth segmentations of white matter lesion changes. Each patient has been imaged twice on two separate occasions. The
@@ -73,6 +101,35 @@ folder consists of:
 - White matter lesion change mask
 - RAW images in their original space 
 - Intra-study transform parameters and transform parameters from RAW to common space
+
+### Raw Data
+
+```{r, echo=FALSE, message=FALSE}
+library(neurobase)
+library(dplyr)
+library(tidyr)
+x = list.files(
+  path = "longitiudinal/raw", pattern = ".nii.gz", 
+  recursive = TRUE, full.names = TRUE)
+x = x[ !grepl("gt[.]nii", x)]
+mods = nii.stub(x, bn = TRUE)
+mods = gsub("study\\d_", "", mods)
+mods = recode(mods, 
+              "gt" = "Gold_Standard",
+       T1W = "T1", T1WKS = "T1Post", T2W = "T2")
+df = data_frame(file = x, mod = mods, 
+                id = basename(dirname(x)),
+                study = sub(".*study(\\d).*", "\\1", x))
+df = df %>% 
+  mutate(Gold_Standard = file.path(dirname(file), "gt.nii.gz"))
+long_raw = as.data.frame(df)
+save(long_raw, file = "long_raw.rda", compress = "xz")
+df = df %>%
+  mutate(file = paste0("[", mod, "](", file, ")"),
+         Gold_Standard = paste0("[Gold_Standard](", Gold_Standard, ")"))
+df = spread(df, key = mod, value = file)
+knitr::kable(df, col.names = rep("", ncol(df)))
+```
 
 ### References 
 The data is described in:
