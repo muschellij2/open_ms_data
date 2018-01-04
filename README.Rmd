@@ -131,6 +131,39 @@ df = spread(df, key = mod, value = file)
 knitr::kable(df, col.names = rep("", ncol(df)))
 ```
 
+
+### Slightly Processed/Coregistered Data
+
+```{r, echo=FALSE, message=FALSE}
+library(neurobase)
+library(dplyr)
+library(tidyr)
+x = list.files(
+  path = "longitiudinal/coregistered/", pattern = ".nii.gz", 
+  recursive = TRUE, full.names = TRUE)
+x = x[ !grepl("(gt|brainmask)[.]nii", x)]
+mods = nii.stub(x, bn = TRUE)
+mods = gsub("study\\d_", "", mods)
+mods = recode(mods, 
+              "gt" = "Gold_Standard",
+              brainmask = "Brain_Mask",
+       T1W = "T1", T1WKS = "T1Post", T2W = "T2")
+df = data_frame(file = x, mod = mods, 
+                id = basename(dirname(x)),
+                study = sub(".*study(\\d).*", "\\1", x))
+df = df %>% 
+  mutate(Gold_Standard = file.path(dirname(file), "gt.nii.gz"),
+         Brain_Mask = file.path(dirname(file), "brainmask.nii.gz"))
+long_coreg = as.data.frame(df)
+save(long_coreg, file = "long_coreg.rda", compress = "xz")
+df = df %>%
+  mutate(file = paste0("[", mod, "](", file, ")"),
+         Gold_Standard = paste0("[Gold_Standard](", Gold_Standard, ")"),
+         Brain_Mask = paste0("[Brain_Mask](", Brain_Mask, ")"))
+df = spread(df, key = mod, value = file)
+knitr::kable(df, col.names = rep("", ncol(df)))
+```
+
 ### References 
 The data is described in:
 Lesjak, Žiga, Franjo Pernuš, Boštjan Likar, and Žiga Špiclin. "Validation of White Matter Lesion Change Detection Methods on a Novel Publicly Available MRI Image Database." Neuroinformatics (2016): 1-18.
