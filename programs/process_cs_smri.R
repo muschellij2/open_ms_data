@@ -21,10 +21,15 @@ df = data_frame(id = basename(ids),
 ids = unique(df$id)
 
 df = df %>% mutate(
+  raw_dir = file.path(id_dir, "raw"),
   proc_dir = file.path(id_dir, 
     "prenorm"),
   reg_dir = file.path(id_dir, 
-    "registered")
+    "registered"),
+  brain_malf_dir = file.path(id_dir, 
+    "brain_malf"),
+  malf_dir = file.path(id_dir, 
+    "malf")  
 )
 mods = c("FLAIR" = "FLAIR",
   "T1" = "T1W",
@@ -63,6 +68,10 @@ dir.create(idf$proc_dir,
   showWarnings = FALSE)
 dir.create(idf$reg_dir,
   showWarnings = FALSE)
+dir.create(idf$brain_malf_dir,
+  showWarnings = FALSE)
+dir.create(idf$malf_dir,
+  showWarnings = FALSE)
 fmods = setdiff(names(mods),
   "GOLD_STANDARD")
 files = as.character(idf[, fmods])
@@ -73,14 +82,20 @@ gold_standard = idf$GOLD_STANDARD
 print(isub)
 print(idf$id)
 
+outprefix = file.path(
+  idf$brain_malf_dir,
+  "FLAIR_")
+
 processed = smri_prenormalize(
   x = files,
   outdir = idf$proc_dir,
   gold_standard = gold_standard,
   gs_space = "FLAIR",
   reg_space = "FLAIR",
-  verbose = TRUE,
-  probs = c(0, 0.999),
+  malf_transform = "SyN",
+  verbose = 2,
+  outprefix = outprefix,  
+  probs = c(0, 0.995),
   num_templates = 35)
 
 
