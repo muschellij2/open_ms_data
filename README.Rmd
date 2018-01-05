@@ -9,6 +9,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = ""
 )
+library(neurobase)
+library(dplyr)
+library(tidyr)
+library(readr)
 ```
 
 # Multiple Sclerosis Lesion Data
@@ -29,12 +33,34 @@ below in any published work that uses this database.
 The data is described in:
 Lesjak, Žiga, et al. "A novel public MR image dataset of multiple sclerosis patients with lesion segmentations based on multi-rater consensus." Neuroinformatics (2017): 1-13.
 
+### Demographics
+
+```{r, echo=FALSE, message=FALSE}
+cs_demog = read_csv("cross_sectional/patient_info.csv")
+remove_na = function(x) {
+  x[ x %in% "N/A"] = NA
+  x
+}
+cs_demog = rename(cs_demog, id = patient_id)
+cs_demog$id = sprintf("patient%02.0f", cs_demog$id)
+cs_demog$ms_type = remove_na(cs_demog$ms_type)
+cs_demog$edss = remove_na(cs_demog$edss)
+cs_demog$criteria = remove_na(cs_demog$criteria)
+cs_demog$edss = as.numeric(cs_demog$edss)
+
+cn_order = c("id", "age", "sex", "ms_type")
+cn = colnames(cs_demog)
+in_order = cn %in% cn_order
+cn = cn[ c(which(in_order), which(!in_order)) ]
+cs_demog = cs_demog[, cn]
+
+save(cs_demog, file = "cs_demog.rda", compress = "xz")
+knitr::kable(cs_demog)
+```
+
 ### Raw Data
 
 ```{r, echo=FALSE, message=FALSE}
-library(neurobase)
-library(dplyr)
-library(tidyr)
 x = list.files(
   path = "cross_sectional/raw", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)
@@ -56,9 +82,6 @@ knitr::kable(df, col.names = rep("", ncol(df)))
 
 These images were co-registered to the FLAIR and bias corrected and include a brain mask (in the FLAIR space.)
 ```{r, echo=FALSE, message=FALSE}
-library(neurobase)
-library(dplyr)
-library(tidyr)
 x = list.files(
   path = "cross_sectional/coregistered/", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)
@@ -102,12 +125,24 @@ folder consists of:
 - RAW images in their original space 
 - Intra-study transform parameters and transform parameters from RAW to common space
 
+### Demographics
+
+```{r, echo=FALSE, message=FALSE}
+long_demog = read_csv("longitiudinal/patient_info.csv")
+long_demog = rename(long_demog, id = patient_id)
+long_demog$id = sprintf("patient%02.0f", long_demog$id)
+cn = colnames(long_demog)
+in_order = cn %in% cn_order
+cn = cn[ c(which(in_order), which(!in_order)) ]
+long_demog = long_demog[, cn]
+
+save(long_demog, file = "long_demog.rda", compress = "xz")
+knitr::kable(long_demog)
+```
+
 ### Raw Data
 
 ```{r, echo=FALSE, message=FALSE}
-library(neurobase)
-library(dplyr)
-library(tidyr)
 x = list.files(
   path = "longitiudinal/raw", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)
@@ -135,9 +170,6 @@ knitr::kable(df, col.names = rep("", ncol(df)))
 ### Slightly Processed/Coregistered Data
 
 ```{r, echo=FALSE, message=FALSE}
-library(neurobase)
-library(dplyr)
-library(tidyr)
 x = list.files(
   path = "longitiudinal/coregistered/", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)

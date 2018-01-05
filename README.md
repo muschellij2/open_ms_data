@@ -23,8 +23,27 @@ database.
 
 The data is described in: Lesjak, Žiga, et al. “A novel public MR image
 dataset of multiple sclerosis patients with lesion segmentations based
-on multi-rater consensus.” Neuroinformatics (2017):
-1-13.
+on multi-rater consensus.” Neuroinformatics (2017): 1-13.
+
+### Demographics
+
+| id        | age | sex | ms\_type | edss | criteria      |
+| :-------- | --: | :-- | :------- | ---: | :------------ |
+| patient01 |  31 | F   | RR       |  1.5 | McDonald 2010 |
+| patient02 |  33 | M   | CIS      |  0.0 | McDonald 2010 |
+| patient03 |  37 | F   | NA       |   NA | NA            |
+| patient04 |  25 | M   | SP       |  6.5 | McDonald 2005 |
+| patient05 |  33 | F   | RR       |  3.5 | McDonald 2005 |
+| patient06 |  37 | F   | SP       |  4.0 | McDonald 2005 |
+| patient07 |  53 | F   | RR       |  0.5 | McDonald 2010 |
+| patient08 |  41 | M   | RR       |  5.0 | McDonald 2005 |
+| patient09 |  40 | F   | RR       |  2.0 | McDonald 2010 |
+| patient10 |  64 | F   | RR       |  2.0 | McDonald 2005 |
+| patient11 |  29 | M   | RR       |  2.0 | McDonald 2010 |
+| patient12 |  39 | F   | RR       |   NA | McDonald 2005 |
+| patient13 |  26 | M   | RR       |  2.0 | McDonald 2010 |
+| patient14 |  42 | M   | RR       |  4.0 | McDonald 2005 |
+| patient15 |  57 | F   | PR       |  6.5 | McDonald 2005 |
 
 ### Raw Data
 
@@ -99,8 +118,32 @@ folders for each of the patients. Each patient’s folder consists of: -
 Co-registered and N4 corrected T1-weighted, T2-weighted and FLAIR images
 for both MR studies - Brain mask - White matter lesion change mask - RAW
 images in their original space - Intra-study transform parameters and
-transform parameters from RAW to common
-space
+transform parameters from RAW to common space
+
+### Demographics
+
+| id        | sex | age | ms\_type | days\_between\_studies |
+| :-------- | :-- | --: | :------- | ---------------------: |
+| patient01 | F   |  20 | NA       |                    203 |
+| patient02 | F   |  29 | RR       |                    283 |
+| patient03 | M   |  19 | RR       |                    671 |
+| patient04 | F   |  33 | NA       |                    155 |
+| patient05 | F   |  35 | RR       |                    380 |
+| patient06 | M   |  47 | RR       |                    473 |
+| patient07 | F   |  40 | SP       |                    317 |
+| patient08 | F   |  41 | RR       |                    305 |
+| patient09 | M   |  20 | NA       |                    116 |
+| patient10 | M   |  50 | NA       |                    236 |
+| patient11 | F   |  31 | RR       |                    405 |
+| patient12 | M   |  19 | NA       |                     81 |
+| patient13 | F   |  49 | RR       |                    329 |
+| patient14 | F   |  29 | RR       |                    723 |
+| patient15 | F   |  41 | RR       |                    168 |
+| patient16 | F   |  41 | RR       |                    164 |
+| patient17 | F   |  25 | RR       |                    321 |
+| patient18 | F   |  44 | RR       |                    524 |
+| patient19 | F   |  19 | RR       |                    228 |
+| patient20 | F   |  50 | RR       |                    454 |
 
 ### Raw Data
 
