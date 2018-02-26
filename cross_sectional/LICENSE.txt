@@ -1,0 +1,12 @@
+The database is released under the Creative-Commons 
+Attribution (CC-BY) license. Please cite the references 
+below in any published work that uses this database.
+
+See http://lit.fe.uni-lj.si/tools.php?lang=eng
+
+References:
+
+- Lesjak, Žiga, Franjo Pernuš, Boštjan Likar, and  Žiga Špiclin. 
+"A Novel Public MR Image Dataset of Multiple Sclerosis Patients 
+With Lesion Segmentations Based on Multi-rater Consensus",
+Neuroinformatics (2017), DOI: 10.1007/s12021-017-9348-7
