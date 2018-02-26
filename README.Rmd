@@ -128,7 +128,7 @@ folder consists of:
 ### Demographics
 
 ```{r, echo=FALSE, message=FALSE}
-long_demog = read_csv("longitiudinal/patient_info.csv")
+long_demog = read_csv("longitudinal/patient_info.csv")
 long_demog = rename(long_demog, id = patient_id)
 long_demog$id = sprintf("patient%02.0f", long_demog$id)
 cn = colnames(long_demog)
@@ -144,7 +144,7 @@ knitr::kable(long_demog)
 
 ```{r, echo=FALSE, message=FALSE}
 x = list.files(
-  path = "longitiudinal/raw", pattern = ".nii.gz", 
+  path = "longitudinal/raw", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)
 x = x[ !grepl("gt[.]nii", x)]
 mods = nii.stub(x, bn = TRUE)
@@ -171,7 +171,7 @@ knitr::kable(df, col.names = rep("", ncol(df)))
 
 ```{r, echo=FALSE, message=FALSE}
 x = list.files(
-  path = "longitiudinal/coregistered/", pattern = ".nii.gz", 
+  path = "longitudinal/coregistered/", pattern = ".nii.gz", 
   recursive = TRUE, full.names = TRUE)
 x = x[ !grepl("(gt|brainmask)[.]nii", x)]
 mods = nii.stub(x, bn = TRUE)
