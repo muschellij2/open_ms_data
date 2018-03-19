@@ -112,27 +112,56 @@ pred = norm_predictors(
   normalized = normalized,
   normalization = "trimmed_z"
 )
+download_template_img_data()
+
+tdf = template_img_data()
+tdf = tdf %>% 
+	mutate(
+		modality = case_when(
+			(modality == "T1_Pre") ~ "T1",
+			(modality == "T1_Post") ~ "T1POST",
+			TRUE ~ modality
+			),
+		modality = factor(modality,
+			levels = names(files))
+		) %>% 
+	filter(!is.na(modality)) %>% 
+	arrange(modality)
+
+mean_imgs = tdf$Mean$file
+sd_imgs = tdf$SD$file
+
+z = template_z_score(
+  pred$intensity_normalized,
+  mask = pred$normalized$brain_mask,
+  template = "Eve",
+  mean_imgs = mean_imgs,
+  sd_imgs = sd_imgs,
+  outdir = idf$proc_dir,
+  verbose = TRUE,
+  remask = TRUE,
+  interpolator = "lanczosWindowedSinc",
+  suffix = "_ztemp")
 
 predictors = gather_predictors(pred)
-
 
 
 ############################
 # Running the same thing
 # but with Eve
 ############################
-all_resampled = seg_normalize(
-  prenormalize = processed,
-  norm_outdir = idf$reg_dir,
-  template = "Eve",
-  verbose = TRUE
-)
-normalized = all_resampled$normalized
+# all_resampled = seg_normalize(
+#   prenormalize = processed,
+#   norm_outdir = idf$reg_dir,
+#   template = "Eve",
+#   verbose = TRUE
+# )
+# normalized = all_resampled$normalized
 
-pred = norm_predictors(
-  normalized = normalized,
-  normalization = "trimmed_z"
-)
+# pred = norm_predictors(
+#   normalized = normalized,
+#   normalization = "trimmed_z"
+# )
 
-predictors = gather_predictors(pred)
+# predictors = gather_predictors(pred)
 
