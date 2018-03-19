@@ -1,0 +1,11 @@
+The database is released under the Creative-Commons 
+Attribution (CC-BY) license. Please cite the references 
+below in any published work that uses this database.
+
+
+
+References:
+
+- Lesjak, Žiga, Franjo Pernuš, Boštjan Likar, and Žiga Špiclin. "Validation 
+  of White-Matter Lesion Change Detection Methods on a Novel Publicly 
+  Available MRI Image Database." Neuroinformatics (2016): 1-18.
