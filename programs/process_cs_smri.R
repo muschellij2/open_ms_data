@@ -131,7 +131,7 @@ tdf = tdf %>%
 mean_imgs = tdf$Mean$file
 sd_imgs = tdf$SD$file
 
-add_suffix = paste0(resampled$suffix, "_", "trimmed_z", "_ztemp")
+add_suffix = paste0(normalized$suffix, "_", "trimmed_z", "_ztemp")
 
 ztemp = template_z_score(
   pred$intensity_normalized,
