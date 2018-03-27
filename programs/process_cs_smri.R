@@ -131,7 +131,9 @@ tdf = tdf %>%
 mean_imgs = tdf$Mean$file
 sd_imgs = tdf$SD$file
 
-z = template_z_score(
+add_suffix = paste0(resampled$suffix, "_", "trimmed_z", "_ztemp")
+
+ztemp = template_z_score(
   pred$intensity_normalized,
   mask = pred$normalized$brain_mask,
   template = "Eve",
@@ -142,6 +144,9 @@ z = template_z_score(
   remask = TRUE,
   interpolator = "lanczosWindowedSinc",
   suffix = "_ztemp")
+
+names(ztemp) = paste0(names(ztemp), "_ztemp")
+pred$normalized$z_to_template = ztemp
 
 predictors = gather_predictors(pred)
 
