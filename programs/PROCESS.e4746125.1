@@ -1,0 +1,397 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘matrixStats’
+
+The following object is masked from ‘package:dplyr’:
+
+    count
+
+Warning messages:
+1: In rgl.init(initValue, onlyNULL) : RGL: unable to open X11 display
+2: 'rgl_init' failed, running with rgl.useNULL = TRUE 
+3: multiple methods tables found for ‘pixdim’ 
+here() starts at /dcl01/smart/data/structural/open_ms/open_ms_data
+Image Orientation to RPI
+fslhd "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/FLAIR.nii.gz" 
+
+fslorient -getorient "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/FLAIR.nii.gz"
+
+fslorient -swaporient "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a250cd7cad/FLAIR.nii.gz"
+
+fslswapdim "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a242a202f3.nii.gz"  RL PA IS "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a246f740de";
+
+fslhd "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T1W.nii.gz" 
+
+fslorient -getorient "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T1W.nii.gz"
+
+fslorient -swaporient "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a2642b3ced/T1W.nii.gz"
+
+fslswapdim "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a26fff29c3.nii.gz"  RL PA IS "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a2b0f65de";
+
+fslhd "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T2W.nii.gz" 
+
+fslorient -getorient "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T2W.nii.gz"
+
+fslorient -swaporient "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a230a30cb2/T2W.nii.gz"
+
+fslswapdim "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a25d8060f3.nii.gz"  RL PA IS "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a223e12c2f";
+
+fslhd "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T1WKS.nii.gz" 
+
+fslorient -getorient "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/T1WKS.nii.gz"
+
+fslorient -swaporient "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a226861b57/T1WKS.nii.gz"
+
+fslswapdim "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a26f2c073d.nii.gz"  RL PA IS "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a259be69d3";
+
+fslhd "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/consensus_gt.nii.gz" 
+
+fslorient -getorient "/dcl01/smart/data/structural/open_ms/open_ms_data/cross_sectional/raw/patient01/consensus_gt.nii.gz"
+
+fslorient -swaporient "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a2624f9306/consensus_gt.nii.gz"
+
+fslswapdim "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a27fae4467.nii.gz"  RL PA IS "/sge_scratch/temp/4746125.1.shared.q/Rtmppsmirk/file66a24832c733";
+
+N4 Bias Field Correction
+Removing necks
+Dropping Empty Dimensions
+Winsorizing Image
+Registering Images to FLAIR
+Running MALF for brain mask with 35 templates - this may take some time
+# Doing Registrations
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
+# Applying Registration output is
+
+# Applying Transformations to file
+
+# Applying Transforms to other.files
+
+# Writing out file
+
+# Writing out other.files
+
+# Running Registration of file to template
+
