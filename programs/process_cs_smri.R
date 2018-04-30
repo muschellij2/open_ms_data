@@ -5,56 +5,27 @@
 rm(list = ls())
 # library(dcmtk)
 # library(dcm2niir)
-# library(fslr)
+library(fslr)
 # library(divest)
 library(dplyr)
 library(matrixStats)
 library(smri.process)
 library(here)
+library(readr)
 
 rootdir = here::here()
-proc_dir = file.path(rootdir,
-    "cross_sectional", "raw")
+proc_dir = here("cross_sectional", "raw")
 
-ids = list.dirs(proc_dir, 
-	recursive = FALSE)
-df = data_frame(id = basename(ids),
-  id_dir = ids)
-ids = unique(df$id)
-
-df = df %>% mutate(
-  raw_dir = file.path(id_dir, "raw"),
-  proc_dir = file.path(id_dir, 
-    "prenorm"),
-  reg_dir = file.path(id_dir, 
-    "registered"),
-  brain_malf_dir = file.path(id_dir, 
-    "brain_malf"),
-  malf_dir = file.path(id_dir, 
-    "malf")  
-)
 mods = c("FLAIR" = "FLAIR",
   "T1" = "T1W",
   "T2" = "T2W",
   "T1POST" = "T1WKS",
   "GOLD_STANDARD" = 
   "consensus_gt")
-mod_df = sapply(mods, function(mod) {
-  fname = file.path(df$id_dir, 
-    paste0(mod, ".nii.gz"))
-})
-fe = array(
-  file.exists(mod_df),
-  dim = dim(mod_df))
-mod_df[ !fe ] = NA
-mod_df = as_data_frame(mod_df)
-mod_df = mod_df %>% 
-  mutate(have_data = rowAlls(fe))
-df = cbind(df, mod_df)
-df = as_data_frame(df)
-df = df %>% 
-  filter(have_data) %>% 
-  select(-have_data)
+df_file = here("cross_sectional", "raw", 
+  "filename_df.rds")
+
+df = read_rds(df_file)
 
 isub = as.numeric(
   Sys.getenv("SGE_TASK_ID")
@@ -66,107 +37,123 @@ if (is.na(isub) || isub < 1) {
 }
 
 idf = df[isub,]
-dir.create(idf$proc_dir,
-  showWarnings = FALSE)
-dir.create(idf$reg_dir,
-  showWarnings = FALSE)
-dir.create(idf$brain_malf_dir,
-  showWarnings = FALSE)
-dir.create(idf$malf_dir,
-  showWarnings = FALSE)
-fmods = setdiff(names(mods),
-  "GOLD_STANDARD")
-files = as.character(idf[, fmods])
-names(files) = fmods
 
-gold_standard = idf$GOLD_STANDARD
+if (!file.exists(idf$outfile)) {
+  
+  dir.create(idf$proc_dir,
+    showWarnings = FALSE)
+  dir.create(idf$reg_dir,
+    showWarnings = FALSE)
+  dir.create(idf$brain_malf_dir,
+    showWarnings = FALSE)
+  dir.create(idf$malf_dir,
+    showWarnings = FALSE)
+  fmods = setdiff(names(mods),
+    "GOLD_STANDARD")
+  files = as.character(idf[, fmods])
+  names(files) = fmods
 
-print(isub)
-print(idf$id)
+  gold_standard = idf$GOLD_STANDARD
 
-outprefix = file.path(
-  idf$brain_malf_dir,
-  "FLAIR_")
+  print(isub)
+  print(idf$id)
 
-processed = smri_prenormalize(
-  x = files,
-  outdir = idf$proc_dir,
-  gold_standard = gold_standard,
-  gs_space = "FLAIR",
-  reg_space = "FLAIR",
-  malf_transform = "SyN",
-  verbose = 2,
-  outprefix = outprefix,  
-  probs = c(0, 0.995),
-  num_templates = 35)
+  outprefix = file.path(
+    idf$brain_malf_dir,
+    "FLAIR_")
 
+  processed = smri_prenormalize(
+    x = files,
+    outdir = idf$proc_dir,
+    gold_standard = gold_standard,
+    gs_space = "FLAIR",
+    reg_space = "FLAIR",
+    malf_transform = "SyN",
+    verbose = 2,
+    outprefix = outprefix,  
+    probs = c(0, 0.995),
+    num_templates = 15,
+    force_registration = FALSE)
 
-all_resampled = seg_normalize(
-  prenormalize = processed,
-  template = "none",
-  verbose = TRUE
-)
-normalized = all_resampled$normalized
+  outprefix = file.path(
+    idf$malf_dir,
+    "T1")
 
-pred = norm_predictors(
-  normalized = normalized,
-  normalization = "trimmed_z"
-)
-download_template_img_data()
+  all_resampled = seg_normalize(
+    prenormalize = processed,
+    template = "none",
+    verbose = TRUE,
+    force_registration = FALSE,
+    outprefix = outprefix
+  )
+  normalized = all_resampled$normalized
 
-tdf = template_img_data()
-tdf = tdf %>% 
-	mutate(
-		modality = case_when(
-			(modality == "T1_Pre") ~ "T1",
-			(modality == "T1_Post") ~ "T1POST",
-			TRUE ~ modality
-			),
-		modality = factor(modality,
-			levels = names(files))
-		) %>% 
-	filter(!is.na(modality)) %>% 
-	arrange(modality)
+  pred = norm_predictors(
+    normalized = normalized,
+    normalization = "trimmed_z"
+  )
+  download_template_img_data()
 
-mean_imgs = tdf$Mean$file
-sd_imgs = tdf$SD$file
+  tdf = template_img_data()
+  tdf = tdf %>% 
+  	mutate(
+  		modality = case_when(
+  			(modality == "T1_Pre") ~ "T1",
+  			(modality == "T1_Post") ~ "T1POST",
+  			TRUE ~ modality
+  			),
+  		modality = factor(modality,
+  			levels = names(files))
+  		) %>% 
+  	filter(!is.na(modality)) %>% 
+  	arrange(modality)
 
-add_suffix = paste0(normalized$suffix, "_", "trimmed_z", "_ztemp")
+  tdf = split(tdf, tdf$statistic)
 
-ztemp = template_z_score(
-  pred$intensity_normalized,
-  mask = pred$normalized$brain_mask,
-  template = "Eve",
-  mean_imgs = mean_imgs,
-  sd_imgs = sd_imgs,
-  outdir = idf$proc_dir,
-  verbose = TRUE,
-  remask = TRUE,
-  interpolator = "lanczosWindowedSinc",
-  suffix = "_ztemp")
+  mean_imgs = tdf$Mean$file
+  sd_imgs = tdf$SD$file
 
-names(ztemp) = paste0(names(ztemp), "_ztemp")
-pred$normalized$z_to_template = ztemp
+  add_suffix = paste0(normalized$suffix, "_", 
+    "trimmed_z", "_ztemp")
 
-predictors = gather_predictors(pred)
+  ztemp = template_z_score(
+    pred$intensity_normalized,
+    mask = pred$normalized$brain_mask,
+    template = "Eve",
+    mean_imgs = mean_imgs,
+    sd_imgs = sd_imgs,
+    outdir = idf$proc_dir,
+    verbose = TRUE,
+    remask = TRUE,
+    interpolator = "lanczosWindowedSinc",
+    suffix = "_ztemp")
 
+  names(ztemp) = paste0(names(ztemp), "_ztemp")
+  pred$normalized$z_to_template = ztemp
 
-############################
-# Running the same thing
-# but with Eve
-############################
-# all_resampled = seg_normalize(
-#   prenormalize = processed,
-#   norm_outdir = idf$reg_dir,
-#   template = "Eve",
-#   verbose = TRUE
-# )
-# normalized = all_resampled$normalized
+  predictors = gather_predictors(pred)
 
-# pred = norm_predictors(
-#   normalized = normalized,
-#   normalization = "trimmed_z"
-# )
+  xdf = data_frame(preds = predictors,
+    id = idf$id,
+    type = names(predictors))
 
-# predictors = gather_predictors(pred)
+  write_rds(xdf, path = idf$outfile)
+  ############################
+  # Running the same thing
+  # but with Eve
+  ############################
+  # all_resampled = seg_normalize(
+  #   prenormalize = processed,
+  #   norm_outdir = idf$reg_dir,
+  #   template = "Eve",
+  #   verbose = TRUE
+  # )
+  # normalized = all_resampled$normalized
 
+  # pred = norm_predictors(
+  #   normalized = normalized,
+  #   normalization = "trimmed_z"
+  # )
+
+  # predictors = gather_predictors(pred)
+}
