@@ -175,7 +175,13 @@ The database is released under the Creative-Commons Attribution (CC-BY) license.
 
 ### Description
 
-This archive contains longitudinal Magnetic Resonance (MR) images of Multiple Sclerosis (MS) patients with corresponding ground truth segmentations of white matter lesion changes. Each patient has been imaged twice on two separate occasions. The images are grouped into folders for each of the patients. Each patient's folder consists of: - Co-registered and N4 corrected T1-weighted, T2-weighted and FLAIR images for both MR studies - Brain mask - White matter lesion change mask - RAW images in their original space - Intra-study transform parameters and transform parameters from RAW to common space
+This archive contains longitudinal Magnetic Resonance (MR) images of Multiple Sclerosis (MS) patients with corresponding ground truth segmentations of white matter lesion changes. Each patient has been imaged twice on two separate occasions. The images are grouped into folders for each of the patients. Each patient's folder consists of:
+
+-   Co-registered and N4 corrected T1-weighted, T2-weighted and FLAIR images for both MR studies
+-   Brain mask
+-   White matter lesion change mask
+-   RAW images in their original space
+-   Intra-study transform parameters and transform parameters from RAW to common space
 
 ### Demographics
 

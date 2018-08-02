@@ -142,6 +142,7 @@ truth segmentations of white matter lesion changes. Each patient
 has been imaged twice on two separate occasions. The images are 
 grouped into folders for each of the patients. Each patient's 
 folder consists of:
+
 - Co-registered and N4 corrected T1-weighted, T2-weighted and FLAIR images for both MR studies 
 - Brain mask 
 - White matter lesion change mask
