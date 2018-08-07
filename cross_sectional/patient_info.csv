@@ -1,0 +1,31 @@
+patient_id,age,sex,ms_type,edss,criteria
+1,31,F,RR,1.5,McDonald 2010
+2,33,M,CIS,0.0,McDonald 2010
+3,37,F,N/A,N/A,N/A
+4,25,M,SP,6.5,McDonald 2005
+5,33,F,RR,3.5,McDonald 2005
+6,37,F,SP,4.0,McDonald 2005
+7,53,F,RR,0.5,McDonald 2010
+8,41,M,RR,5.0,McDonald 2005
+9,40,F,RR,2.0,McDonald 2010
+10,64,F,RR,2.0,McDonald 2005
+11,29,M,RR,2.0,McDonald 2010
+12,39,F,RR,N/A,McDonald 2005
+13,26,M,RR,2.0,McDonald 2010
+14,42,M,RR,4.0,McDonald 2005
+15,57,F,PR,6.5,McDonald 2005
+16,42,F,RR,4.0,McDonald 2005
+17,27,F,RR,0.0,McDonald 2010
+18,60,F,RR,2.0,McDonald 2005
+19,47,F,RR,1.0,McDonald 2005
+20,37,F,RR,N/A,McDonald 2010
+21,33,F,RR,4.5,McDonald 2005
+22,30,F,RR,2.0,McDonald 2005
+23,39,F,RR,5.0,McDonald 2005
+24,43,M,RR,0.0,McDonald 2005
+25,35,F,RR,3.5,McDonald 2005
+26,40,F,RR,2.0,McDonald 2005
+27,39,F,RR,2.5,McDonald 2005
+28,39,F,RR,0.0,McDonald 2005
+29,26,F,CIS,3.0,McDonald 2010
+30,54,F,RR,1.5,McDonald 2005
