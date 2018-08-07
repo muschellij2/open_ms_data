@@ -107,6 +107,16 @@ df = df %>%
     "_regtoFLAIR_resampled", 
     ".nii.gz"))
     )
+
+df = df %>% 
+  mutate(
+    non_res_gs_file = file.path(df$proc_dir,
+      paste0("GOLD_STANDARD", 
+    "_N4_noneck_reduced_winsor", 
+    "_regtoFLAIR", 
+    ".nii.gz"))
+    )
+  
 df = df %>% 
   mutate(
     struct_file = file.path(df$proc_dir,
@@ -120,7 +130,6 @@ df = df %>%
     "_regtoFLAIR_brain_N4_resampled", 
     ".nii.gz"))
     )  
-
 
 outfile = here("cross_sectional", "raw", 
 	"filename_df.rds")

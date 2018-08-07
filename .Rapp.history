@@ -1,0 +1,4 @@
+load("/Users/johnmuschelli/Dropbox/Projects/open_ms_data/cs_raw.rda")
+dir()
+ls()
+cs_raw

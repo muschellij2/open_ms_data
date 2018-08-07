@@ -257,17 +257,17 @@ patient_data = patient_data %>%
   left_join(df[, c("id", "volume", "voxres")], by = "id")  
 
 patient_data = patient_data %>% 
-  mutate(est_volume = est_n_voxels * voxres,
-    true_volume = n_voxels * voxres)
+  mutate(est_volume = est_n_voxels * voxres / 1000,
+    true_volume = n_voxels * voxres / 1000)
 
 
 
 pngname = file.path(res_dir, 
   "volume_results.png")
-png(pngname, height = 8, width = 8, 
+png(pngname, height = 4, width = 8, 
   res = 600, units = "in")
 
-patient_data %>% 
+vol_plot = patient_data %>% 
   filter(run_model == "ranger_nopost") %>% 
   filter(smooth) %>% 
   ggplot(aes(
@@ -280,11 +280,20 @@ patient_data %>%
       method="lm",
       hjust=0,parse=TRUE) +
   geom_smooth(method = "lm", se = FALSE) +
-  ylab("Manual Volume") +
-  xlab("Automated Volume")
-  theme(text = element_text(size = 20)) + 
-  xlab("Automatic Lesion Volume (mL)") +
-  xlab("Manual Lesion Volume (mL)")
+  ylab("Automatic Lesion Volume (mL)") +
+  xlab("Manual Lesion Volume (mL)")  +
+  theme(text = element_text(size = 20)) 
+print(vol_plot)
+dev.off()
+
+pngname = file.path(res_dir, 
+  "volume_results_oasis.png")
+png(pngname, height = 4, width = 8, 
+  res = 600, units = "in")
+res = patient_data %>% 
+  filter(run_model == "oasis") %>% 
+  filter(smooth) 
+print({ vol_plot %+% res  })
 dev.off()
 
 
