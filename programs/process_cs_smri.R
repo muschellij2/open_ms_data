@@ -81,7 +81,8 @@ if (!file.exists(idf$outfile)) {
 
   all_resampled = seg_normalize(
     prenormalize = processed,
-    template = "none",
+    #template = "none",
+    template = "MNI",
     verbose = TRUE,
     force_registration = FALSE,
     outprefix = outprefix

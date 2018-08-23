@@ -4,3 +4,4 @@ cross_sectional/results/
 cross_sectional/raw/*/malf
 cross_sectional/raw/*/prenorm
 cross_sectional/model/
+cross_sectional/raw/*/brain_malf
