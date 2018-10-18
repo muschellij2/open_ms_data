@@ -40,7 +40,8 @@ for (iid in seq(nrow(df))) {
     check_mask_fail(mask)
     mask_vec = c(mask) > 0
 
-    if (!is.na(idf$gs_file)) {
+    if (!is.na(idf$gs_file) & 
+      file.exists(idf$gs_file)) {
       Y = readNifti(idf$gs_file)
       check_mask_fail(Y)
       Y = c(Y)

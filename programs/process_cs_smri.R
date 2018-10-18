@@ -25,7 +25,7 @@ mods = c("FLAIR" = "FLAIR",
 df_file = here("cross_sectional", "raw", 
                "filename_df.rds")
 
-df = read_rds(df_file)
+df = readr::read_rds(df_file)
 
 isub = as.numeric(
   Sys.getenv("SGE_TASK_ID")
@@ -66,7 +66,9 @@ for (itemplate in c("none", "MNI", "Eve")) {
     names(files) = fmods
     
     gold_standard = idf$GOLD_STANDARD
-    
+    if (is.na(gold_standard)) {
+      gold_standard = NULL
+    }
     print(isub)
     print(idf$id)
     
@@ -84,7 +86,7 @@ for (itemplate in c("none", "MNI", "Eve")) {
       verbose = 2,
       outprefix = outprefix,  
       probs = c(0, 0.995),
-      num_templates = 15,
+      num_templates = 35,
       force_registration = FALSE)
     
     outprefix = file.path(
@@ -96,14 +98,17 @@ for (itemplate in c("none", "MNI", "Eve")) {
       #template = "none",
       template = itemplate,
       verbose = TRUE,
+      typeofTransform = "Rigid",
+      segment_typeofTransform = "SyN",      
       force_registration = FALSE,
       outprefix = outprefix
     )
     normalized = all_resampled$normalized
     
+    normalization = "trimmed_z"
     pred = norm_predictors(
       normalized = normalized,
-      normalization = "trimmed_z"
+      normalization = normalization
     )
     download_template_img_data()
     
@@ -126,8 +131,12 @@ for (itemplate in c("none", "MNI", "Eve")) {
     mean_imgs = tdf$Mean$file
     sd_imgs = tdf$SD$file
     
-    add_suffix = paste0(normalized$suffix, "_", 
-                        "trimmed_z", "_ztemp")
+    n_suffix = gsub("_", "", normalization)
+    n_suffix = paste0(normalized$suffix, 
+                      "_", n_suffix)    
+    add_suffix = paste0(
+      n_suffix,
+      "_ztemp")
     
     ztemp = template_z_score(
       pred$intensity_normalized,
@@ -139,7 +148,7 @@ for (itemplate in c("none", "MNI", "Eve")) {
       verbose = TRUE,
       remask = TRUE,
       interpolator = "lanczosWindowedSinc",
-      suffix = "_ztemp")
+      suffix = add_suffix)
     
     names(ztemp) = paste0(names(ztemp), "_ztemp")
     pred$normalized$z_to_template = ztemp
@@ -150,7 +159,7 @@ for (itemplate in c("none", "MNI", "Eve")) {
                      id = idf$id,
                      type = names(predictors))
     
-    write_rds(xdf, path = outfile)
+    readr::write_rds(xdf, path = outfile)
     ############################
     # Running the same thing
     # but with Eve

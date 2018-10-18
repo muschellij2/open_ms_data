@@ -4,7 +4,9 @@
 cd ${structural}/open_ms/open_ms_data/programs; 
 
 # new may need upwards of 70G
-Rnosave process_cs_smri.R -t 1-30 -N PROCESS \
+Rnosave process_cs_smri.R -t 1-30 \
+	-N PROCESS \
+	-hold_jid INSTALL \
 	-l mem_free=10G,h_vmem=11G
 
 Rnosave create_predictor_df.R -N DF_MODEL \
@@ -27,6 +29,9 @@ Rnosave plot_image_segmentations.R -N PLOT_RED
 ###################################
 # OASIS Pipeline
 ###################################
+Rnosave oasis_predict.R -t 1-30 -N OASIS \
+	-l mem_free=10G,h_vmem=11G	
+
 Rnosave run_oasis.R -t 1-30 -N OASIS_PREPROC
 
 Rnosave open_ms_fit_oasis.R -N OASIS_MODEL \

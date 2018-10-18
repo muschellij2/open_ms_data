@@ -37,12 +37,27 @@ df = data_frame(img = files,
                 stub = nii.stub(img, bn = TRUE))
 df = df %>% 
   mutate(id = basename(dirname(img)),
-         modality = sub("_N4.*", "", stub)) %>% 
+         modality = sub("_N4.*", "", stub),
+         processing = sub(".*regtoMNI", "", stub),
+         processing = sub("_", "", processing),
+         processing = ifelse(processing == "", "none", processing)) %>% 
   select(-stub)
 df = df %>% 
-  spread(key = modality, value = img)
+  spread(key = modality, value = img) %>% 
+  group_by(id) %>% 
+  mutate(
+    GOLD_STANDARD = ifelse(
+      all(is.na(GOLD_STANDARD)),
+      NA, 
+      unique(GOLD_STANDARD[!is.na(GOLD_STANDARD)])
+    )
+  ) %>% 
+  ungroup
 back = df %>% gather(key = "var", "value", -id)
 any(is.na(back$value))
+
+df = df %>% 
+  mutate(processing == "none")
 
 
 
