@@ -5,6 +5,7 @@
 rm(list = ls())
 # library(dcmtk)
 # library(dcm2niir)
+library(RNifti)
 library(fslr)
 # library(divest)
 library(dplyr)
@@ -12,29 +13,46 @@ library(matrixStats)
 library(smri.process)
 library(here)
 library(readr)
-library(RNifti)
 
 rootdir = here::here()
 proc_dir = file.path(rootdir,
     "cross_sectional", "raw")
-df_file = here("cross_sectional", "raw", 
-  "filename_df.rds")
+
+iid = as.numeric(
+  Sys.getenv("SGE_TASK_ID")
+)
+# idir <- as.numeric(
+#     Sys.getenv("LSB_JOBINDEX"))
+if (is.na(iid) || iid < 1) {
+  iid = 15
+}
 
 
-data_df = read_rds(df_file)
-df = data_df
+itemplate = "MNI"
+# itemplate = "MNI"
+  # for (itemplate in c("none", "MNI", "Eve")) {
+    print(itemplate)
+    pre = switch(itemplate,
+                 none = "",
+                 MNI = "MNI_",
+                 Eve = "Eve_")
 
-df = df %>% 
-  filter(file.exists(outfile))
+    df_file = here(
+      "cross_sectional", "raw",
+      paste0(pre, "filename_df.rds"))
+    df = read_rds(df_file)
 
-iid = 1
+    idf = df[iid,]
+    ofile = idf$out_df
+    print(file.exists(ofile))
 
-for (iid in seq(nrow(df))) {
+# df = df %>% 
+#   filter(file.exists(outfile))
 
-  idf = df[iid,]
-  ofile = idf$out_df
+# for (iid in seq(nrow(df))) {
 
   if (!file.exists(ofile)) {
+
     pred_df = read_rds(idf$outfile)
     mask = readNifti(idf$mask_file)
     check_mask_fail(mask)
@@ -59,6 +77,13 @@ for (iid in seq(nrow(df))) {
       c(readNifti(x))
     })
 
+    stopifnot(!anyNA(mask_vec))
+    for (icol in colnames(res)) {
+      res[ is.nan(res[, icol, drop = TRUE]), icol] = 0
+      res[ is.infinite(res[, icol, drop = TRUE]), icol] = 0
+    }
+    stopifnot(!anyNA(res))    
+    
     res = res[ mask_vec, ]
     res = as_data_frame(res)
     colnames(res) = pred_df$type
@@ -69,4 +94,4 @@ for (iid in seq(nrow(df))) {
     for (i in 1:10) gc()
   }
   print(iid)
-}
+# }

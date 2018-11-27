@@ -5,12 +5,13 @@
 rm(list = ls())
 # library(dcmtk)
 # library(dcm2niir)
+library(RNifti)
 library(fslr)
 # library(divest)
 library(dplyr)
 library(here)
 library(readr)
-library(RNifti)
+library(ranger)
 library(caret)
 
 reduce_train_object = function(x) {
@@ -23,35 +24,42 @@ reduce_train_object = function(x) {
 
 set.seed(20180410)
 rootdir = here::here()
-df_file = here("cross_sectional", "raw", 
-  "filename_df.rds")
 mod_dir = here("cross_sectional", "model")
 dir.create(mod_dir, showWarnings = FALSE)
-model_file = here("cross_sectional", "model", 
-  "train_model.rds")
 
 
 isub = as.numeric(
   Sys.getenv("SGE_TASK_ID")
   )
 if (is.na(isub) || isub < 1) {
-  isub = 1
+  isub = 4
 }
 
 first_model_file = here(
   "cross_sectional", "model", 
     "first_train_model.rds")
 
-remove_t1_post = c(FALSE, TRUE)
+templates = "MNI"
 filtered = c(FALSE, TRUE)
+remove_t1_post = c(FALSE, TRUE)
+runner = c("ranger", "caret")
+training = c("first15", "random")
+# training = "first15"
 eg = expand.grid(
-  remove_t1_post = remove_t1_post,
   filtered = filtered,
+  itemplate = templates,
+  remove_t1_post = remove_t1_post,
+  training = training,
+  runner = runner,
   stringsAsFactors = FALSE)
-eg$model_file = here("cross_sectional", "model", 
-    paste0("train_model", 
-    ifelse(eg$remove_t1_post, "_nopost", ""),
+eg$model_file = here(
+  "model", 
+  paste0(
+    ifelse(eg$runner == "ranger", "ranger_", ""),
+    "train_model", 
+    ifelse(eg$remove_t1_post, "_not1post", ""),
     ifelse(eg$filtered, "_filtered", ""),
+    ifelse(eg$training == "random", "", "_first15"),
     ".rds"))
 
 ieg = eg[isub,]
@@ -59,22 +67,31 @@ ieg = eg[isub,]
 remove_t1_post = ieg$remove_t1_post
 filtered = ieg$filtered
 model_file = ieg$model_file
+training = ieg$training
+runner = ieg$runner
+itemplate = ieg$itemplate
+
+
+print(itemplate)
+pre = switch(itemplate,
+             none = "",
+             MNI = "MNI_",
+             Eve = "Eve_")
+
+df_file = here("cross_sectional", "raw", 
+               paste0(pre, "filename_df.rds"))
 
 df = read_rds(df_file)
 
 df$prob_file = file.path(df$proc_dir, 
   paste0(df$id, "_",
-    "ranger",
-    ifelse(remove_t1_post, "_nopost", ""),
-    ifelse(filtered, "_filtered", ""),    
+    runner, "_", itemplate,
+    ifelse(remove_t1_post, "_not1post", ""),
+    ifelse(filtered, "_filtered", ""),
+    ifelse(training == "random", "", "_first15"),
     "_phat.nii.gz"))
-df$sm_prob_file = file.path(df$proc_dir, 
-  paste0(df$id, "_",
-    "ranger",
-    ifelse(remove_t1_post, "_nopost", ""),
-    ifelse(filtered, "_filtered", ""),    
-    "_smoothed",    
-    "_phat.nii.gz") )
+df$sm_prob_file = sub("_phat", "_smoothed_phat", 
+  df$prob_file)
 
 model = read_rds(model_file)
 
@@ -101,6 +118,7 @@ for (iid in seq(nrow(df))) {
 
     if (!file.exists(prob_file)) {
       
+      message("Reading in Data")
       proc_df = read_rds(ofile)
       Y = proc_df$Y
       # need to remove for the cases where missing
@@ -113,16 +131,28 @@ for (iid in seq(nrow(df))) {
       }
 
       if (filtered) {
+        message("Filtering")
         first_cut = predict(first_model$model,
           type = "response",
           newdata = proc_df)
+        names(first_cut) = NULL        
         first_cut = first_cut > 
           first_model$prob_cutoff
       }
 
-      p = predict(model, newdata = proc_df, 
-        type = "prob")
-      p = p[, "lesion"]
+      message("Predicting")
+      if (runner == "caret") {
+        p = predict(model, newdata = proc_df, 
+          type = "prob")
+        p = p[, "lesion"] 
+      } else {
+        p = predict(model, data = proc_df)
+        if (model$treetype == "Classification") {
+          p = p$predictions == "lesion"
+        } else {
+          p = p$predictions[, "lesion"]
+        }
+      }
       proc_df$p = p
       # putting Y back
       proc_df$Y = Y    
@@ -132,7 +162,8 @@ for (iid in seq(nrow(df))) {
       # need this because may include y > 0 but 
       # not in mask
       mask = readnii(idf$mask_file)
-      if (!is.na(idf$gs_file)) {
+      if (!is.na(idf$gs_file) 
+        & file.exists(idf$gs_file)) {
         Y = readnii(idf$gs_file)
         # check all inside the mask
         mask = mask | Y > 0

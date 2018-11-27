@@ -17,6 +17,11 @@ rootdir = here::here()
 proc_dir = file.path(rootdir,
                      "cross_sectional", "raw")
 
+training_ids = readLines(here("programs",
+    "training.txt"))
+training_ids = as.numeric(training_ids)
+training_ids = sprintf("patient%02.0f", training_ids)
+
 load(here("cs_demog.rda"))
 
 ids = list.dirs(proc_dir, 
@@ -70,7 +75,12 @@ df = df %>%
     Eve_outfile = file.path(proc_dir,
                             "EVE_predictor_names.rds"),    
     out_df = file.path(proc_dir,
-                       "predictors.rds")
+                       "predictors.rds"),
+    MNI_out_df = file.path(proc_dir,
+                       "MNI_predictors.rds"),
+    Eve_out_df = file.path(proc_dir,
+                       "Eve_predictors.rds")                           
+    
   )  
 df$n_voxels = pbapply::pbsapply(df$GOLD_STANDARD, 
                                 fslsum)
@@ -89,11 +99,15 @@ df$age_cut = df$age > median(df$age)
 
 groups = c("train", "test")
 
+# df = df %>% 
+#   group_by(sex, volume_cut, age_cut) %>% 
+#   mutate(group = sample(groups, size = n(),
+#                         replace = TRUE)) %>% 
+#   ungroup()
+
 df = df %>% 
-  group_by(sex, volume_cut, age_cut) %>% 
-  mutate(group = sample(groups, size = n(),
-                        replace = TRUE)) %>% 
-  ungroup()
+  mutate(group = ifelse(id %in% training_ids, 
+    "train", "test"))
 
 # ggplot(aes(x = volume, fill = group), data = df) + 
 # geom_histogram()
@@ -136,8 +150,50 @@ df = df %>%
                                   ".nii.gz"))
   )  
 
+xdf = df
 outfile = here("cross_sectional", "raw", 
                "filename_df.rds")
 write_rds(df, path = outfile)
 
 
+df = xdf
+outfile = here("cross_sectional", "raw",
+               "MNI_filename_df.rds")
+
+ren = function(x) {
+  sub("_resampled", "_regtoMNI", x)
+}
+df = df %>% 
+  mutate(
+    image_file = ren(image_file),
+    struct_file = ren(struct_file),
+    gs_file = ren(gs_file),
+    mask_file = ren(mask_file),
+    outfile = MNI_outfile,
+    out_df = MNI_out_df
+  )
+
+write_rds(df, path = outfile)
+
+
+########################
+# Eve
+########################
+df = xdf
+outfile = here("cross_sectional", "raw",
+               "Eve_filename_df.rds")
+
+ren = function(x) {
+  sub("_resampled", "_regtoEve", x)
+}
+df = df %>% 
+  mutate(
+    image_file = ren(image_file),
+    struct_file = ren(struct_file),
+    gs_file = ren(gs_file),
+    mask_file = ren(mask_file),
+    outfile = Eve_outfile,
+    out_df = Eve_out_df
+  )
+
+write_rds(df, path = outfile)

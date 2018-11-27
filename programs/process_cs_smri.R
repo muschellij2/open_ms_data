@@ -33,14 +33,15 @@ isub = as.numeric(
 # idir <- as.numeric(
 #     Sys.getenv("LSB_JOBINDEX"))
 if (is.na(isub) || isub < 1) {
-  isub = 1
+  isub = 18
 }
 
 idf = df[isub,]
 
 #template = "none",
-itemplate = "none"
+itemplate = "MNI"
 for (itemplate in c("none", "MNI", "Eve")) {
+  
   idf = df[isub,]
   pre = switch(itemplate,
          none = "",
@@ -76,6 +77,7 @@ for (itemplate in c("none", "MNI", "Eve")) {
       idf$brain_malf_dir,
       "FLAIR_")
     
+    num_templates = 35
     processed = smri_prenormalize(
       x = files,
       outdir = idf$proc_dir,
@@ -83,25 +85,31 @@ for (itemplate in c("none", "MNI", "Eve")) {
       gs_space = "FLAIR",
       reg_space = "FLAIR",
       malf_transform = "SyN",
+      brain_extraction_method = "abp",
       verbose = 2,
       outprefix = outprefix,  
       probs = c(0, 0.995),
-      num_templates = 35,
+      num_templates = num_templates,
       force_registration = FALSE)
     
     outprefix = file.path(
       idf$malf_dir,
       "T1")
-    
+
+    outfiles = paste0(outprefix,
+      "_", seq(num_templates), "out.nii.gz")
+
     all_resampled = seg_normalize(
       prenormalize = processed,
       #template = "none",
       template = itemplate,
       verbose = TRUE,
+      # why rigid?
       typeofTransform = "Rigid",
       segment_typeofTransform = "SyN",      
       force_registration = FALSE,
-      outprefix = outprefix
+      outprefix = outprefix,
+      outfiles = outfiles
     )
     normalized = all_resampled$normalized
     
@@ -110,6 +118,7 @@ for (itemplate in c("none", "MNI", "Eve")) {
       normalized = normalized,
       normalization = normalization
     )
+    
     download_template_img_data()
     
     tdf = template_img_data()
