@@ -40,12 +40,14 @@ filtered = c(FALSE, TRUE)
 remove_t1_post = c(FALSE, TRUE)
 runner = c("ranger", "caret")
 training = c("first15", "random")
+structures = c(FALSE, TRUE)
 # training = "first15"
 eg = expand.grid(
   filtered = filtered,
   itemplate = templates,
   remove_t1_post = remove_t1_post,
   training = training,
+  structures = structures,
   runner = runner,
   stringsAsFactors = FALSE)
 eg$model_file = here(
@@ -56,12 +58,13 @@ eg$model_file = here(
     ifelse(eg$remove_t1_post, "_not1post", ""),
     ifelse(eg$filtered, "_filtered", ""),
     ifelse(eg$training == "random", "", "_first15"),
+    ifelse(eg$structures, "_withStruct", ""),    
     ".rds"))
 isub = as.numeric(
   Sys.getenv("SGE_TASK_ID")
 )
 if (is.na(isub) || isub < 1) {
-  isub = 4
+  isub = 14
 }
 
 ieg = eg[isub,]
@@ -71,6 +74,8 @@ filtered = ieg$filtered
 runner = ieg$runner
 remove_t1_post = ieg$remove_t1_post
 training = ieg$training
+structures = ieg$structures 
+
 
 # for (iid in seq(nrow(xdf))) {
 
@@ -96,6 +101,7 @@ if (!file.exists(model_file) | rerun) {
     "model", 
     paste0("first_train_model",
           ifelse(training == "random", "", "_first15"),
+          ifelse(structures, "_withStruct", ""),
           ".rds"))
 
   data_df = read_rds(df_file)
@@ -133,6 +139,9 @@ if (!file.exists(model_file) | rerun) {
         res[ is.infinite(res[, icol, drop = TRUE]), 
           icol] = 0
       }
+      if (!structures) {
+        res$STRUCTURES = NULL
+      }      
       stopifnot(!anyNA(res))  
       all_df[[iid]] = res
       rm(res); gc()
@@ -152,6 +161,25 @@ if (!file.exists(model_file) | rerun) {
   nr = nrow(full_df)
   rm(all_df); gc()
 
+  if (structures) {
+    if ("STRUCTURES" %in% colnames(full_df)) {
+      keep_structures = sort(
+        unique(full_df$STRUCTURES[full_df$Y > 0])
+        )
+      full_df = full_df[ full_df$STRUCTURES %in% 
+        keep_structures, ]
+      full_df$STRUCTURES = factor(full_df$STRUCTURES)
+    } else {
+      stop("STRUCTURES not found!")
+    }
+  } else {
+    keep_structures = sort(unique(full_df$STRUCTURES))
+    if (length(keep_structures) == 0) {
+      keep_structures = NULL
+    }
+    full_df$STRUCTURES = NULL
+  }  
+
   if (filtered) {
     # don't need to worry about T1POST here
     if (!file.exists(first_model_file)) {
@@ -167,13 +195,13 @@ if (!file.exists(model_file) | rerun) {
         family = binomial())
       
       full_df$p = predict(first_mod, 
-                          type = "link")
+                          type = "response")
       first_mod = reduce_glm_mod(first_mod)
       quantile_used = 0.005
       q01 = quantile(full_df$p[full_df$Y > 0], 
                      probs = quantile_used)
-      prob_cutoff = exp(q01)
-      
+      prob_cutoff = q01
+
       L = list(
         model = first_mod,
         prob_cutoff = prob_cutoff,
@@ -185,11 +213,14 @@ if (!file.exists(model_file) | rerun) {
       first_df = full_df %>% 
         select(y, FLAIR_quantile, 
                WM, WM.mn, GM.mn)    
-      full_df$p = predict(L$model, 
-                          newdata = first_df, 
-                          type = "response")
+      full_df$p = predict(
+        L$model, 
+        newdata = first_df, 
+        type = "response")
       prob_cutoff = L$prob_cutoff
     }
+    print(prob_cutoff)
+    print(range(full_df$p))  
   }
 
   if (filtered) {
@@ -236,6 +267,7 @@ if (!file.exists(model_file) | rerun) {
         num.threads = 10
       )
       model = reduce_train_object(model)    
+      attr(model, "keep_structures") = keep_structures      
       write_rds(model, path = model_file)
   }
   if (runner == "ranger") {
@@ -247,6 +279,7 @@ if (!file.exists(model_file) | rerun) {
         probability = TRUE
       )
       model = reduce_ranger(model)
+      attr(model, "keep_structures") = keep_structures      
       write_rds(model, path = model_file)
   }
 }

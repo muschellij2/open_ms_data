@@ -24,7 +24,7 @@ iid = as.numeric(
 # idir <- as.numeric(
 #     Sys.getenv("LSB_JOBINDEX"))
 if (is.na(iid) || iid < 1) {
-  iid = 15
+  iid = 18
 }
 
 

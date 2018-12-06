@@ -25,14 +25,18 @@ Rnosave predict_lesion.R -t 1-8 \
 Rnosave create_prediction_df.R -t 1-4 -N OUTPREDICT \
 	-hold_jid_ad PREDICT
 
-Rnosave open_ms_fit_model.R -t 1-16 -N OPEN_MS_MODEL \
+Rnosave open_ms_fit_model.R -t 9-16 -N OPEN_MS_MODEL \
 	-pe local 10 -R y \
-	-l mem_free=51G,h_vmem=52G
+	-l mem_free=21G,h_vmem=22G
+
+Rnosave open_ms_fit_model.R -t 17-32 -N OPEN_MS_MODEL \
+	-pe local 10 -R y \
+	-l mem_free=41G,h_vmem=42G	
 
 Rnosave predict_lesion.R -t 1-16 \
 	-N OPEN_PREDICT_MS \
 	-hold_jid_ad OPEN_MS_MODEL \
-	-l mem_free=41G,h_vmem=42G	
+	-l mem_free=61G,h_vmem=62G	
 
 Rnosave calculate_dice.R -N DICE
 

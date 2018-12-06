@@ -33,14 +33,14 @@ isub = as.numeric(
 # idir <- as.numeric(
 #     Sys.getenv("LSB_JOBINDEX"))
 if (is.na(isub) || isub < 1) {
-  isub = 18
+  isub = 23
 }
 
 idf = df[isub,]
 
 #template = "none",
 itemplate = "MNI"
-for (itemplate in c("none", "MNI", "Eve")) {
+# for (itemplate in c("none", "MNI", "Eve")) {
   
   idf = df[isub,]
   pre = switch(itemplate,
@@ -162,7 +162,8 @@ for (itemplate in c("none", "MNI", "Eve")) {
     names(ztemp) = paste0(names(ztemp), "_ztemp")
     pred$normalized$z_to_template = ztemp
     
-    predictors = gather_predictors(pred)
+    predictors = gather_predictors(pred,
+      structures = TRUE)
     
     xdf = data_frame(preds = predictors,
                      id = idf$id,
@@ -188,4 +189,4 @@ for (itemplate in c("none", "MNI", "Eve")) {
     
     # predictors = gather_predictors(pred)
   }
-}
+# }

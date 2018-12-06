@@ -14,68 +14,64 @@ library(readr)
 library(ranger)
 library(caret)
 
-reduce_train_object = function(x) {
-  x$control$index= NULL
-  x$control$indexOut = NULL
-  x$trainingData = NULL
-  x$finalModel$predictions = NULL
-  x
-}
 
 set.seed(20180410)
 rootdir = here::here()
-mod_dir = here("cross_sectional", "model")
-dir.create(mod_dir, showWarnings = FALSE)
-
-
+mod_dir = Sys.getenv("structural")
+mod_dir = file.path(mod_dir, 
+  "ms_lesion_challenge", "v4", "model")
 
 templates = "MNI"
 filtered = c(FALSE, TRUE)
 remove_t1_post = c(FALSE, TRUE)
 runner = c("ranger", "caret")
-training = c("first15", "random")
 structures = c(FALSE, TRUE)
-# training = "first15"
+
+templates = "MNI"
+itemplate = "MNI"
+filtered = c(FALSE, TRUE)
+# can only do nopd
+nopd = TRUE
+runner = c("ranger", "caret")
+structures = c(FALSE, TRUE)
 eg = expand.grid(
   filtered = filtered,
   itemplate = templates,
-  remove_t1_post = remove_t1_post,
-  training = training,
-  structures = structures,
+  nopd = nopd,
+  structures = structures, 
   runner = runner,
   stringsAsFactors = FALSE)
-eg$model_file = here(
-  "model", 
+eg$model_file = file.path(
+  mod_dir, 
   paste0(
     ifelse(eg$runner == "ranger", "ranger_", ""),
     "train_model", 
-    ifelse(eg$remove_t1_post, "_not1post", ""),
+    ifelse(eg$nopd, "_nopd", ""),
     ifelse(eg$filtered, "_filtered", ""),
-    ifelse(eg$training == "random", "", "_first15"),
-    ifelse(eg$structures, "_withStruct", ""),    
+    ifelse(eg$structures, "_withStruct", ""),
     ".rds"))
+
+eg = eg[ file.exists(eg$model_file), ]
 
 isub = as.numeric(
   Sys.getenv("SGE_TASK_ID")
   )
 if (is.na(isub) || isub < 1) {
-  isub = 20
+  isub = 1
 }
 
 ieg = eg[isub,]
 
-remove_t1_post = ieg$remove_t1_post
+nopd = ieg$nopd
 filtered = ieg$filtered
 model_file = ieg$model_file
-training = ieg$training
 runner = ieg$runner
 itemplate = ieg$itemplate
 structures = ieg$structures
 
-first_model_file = here(
-  "model", 
+first_model_file = file.path(
+  mod_dir,
   paste0("first_train_model",
-        ifelse(training == "random", "", "_first15"),
         ifelse(structures, "_withStruct", ""),
         ".rds"))
 
@@ -93,10 +89,9 @@ df = read_rds(df_file)
 df$prob_file = file.path(df$proc_dir, 
   paste0(df$id, "_",
     runner, "_", itemplate,
-    ifelse(remove_t1_post, "_not1post", ""),
     ifelse(filtered, "_filtered", ""),
-    ifelse(training == "random", "", "_first15"),
     ifelse(structures, "_withStruct", ""),    
+    "_ISBI",
     "_phat.nii.gz"))
 df$sm_prob_file = sub("_phat", "_smoothed_phat", 
   df$prob_file)
