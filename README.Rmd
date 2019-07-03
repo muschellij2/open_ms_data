@@ -69,7 +69,7 @@ x = x[grepl("patient", bn)]
 mods = nii.stub(x, bn = TRUE)
 mods = recode(mods, "consensus_gt" = "Gold_Standard",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-df = data_frame(file = x, mod = mods, id = basename(dirname(x)))
+df = tibble(file = x, mod = mods, id = basename(dirname(x)))
 cs_raw = as.data.frame(df)
 
 save(cs_raw, file = "cs_raw.rda", compress = "xz")
@@ -91,7 +91,7 @@ mods = nii.stub(x, bn = TRUE)
 mods = recode(mods, "consensus_gt" = "Gold_Standard",
               brainmask = "Brain_Mask",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-df = data_frame(file = x, mod = mods, id = basename(dirname(x)))
+df = tibble(file = x, mod = mods, id = basename(dirname(x)))
 cs_coreg = as.data.frame(df)
 save(cs_coreg, file = "cs_coreg.rda", compress = "xz")
 df = df %>%
@@ -113,7 +113,37 @@ mods = nii.stub(x, bn = TRUE)
 mods = recode(mods, "consensus_gt" = "Gold_Standard",
               brainmask = "Brain_Mask",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-df = data_frame(file = x, mod = mods, id = basename(dirname(x)))
+df = tibble(file = x, mod = mods, id = basename(dirname(x)))
+df = df %>%
+  mutate(file = paste0("[", mod, "](", file, ")"))
+df = spread(df, key = mod, value = file)
+knitr::kable(df, col.names = rep("", ncol(df)))
+```
+
+
+### Process, Registered to MNI
+
+These images were are the processed data, and registered to an MNI template.  The images were processed using the following methodology:
+
+1. N4 bias field correction
+2. Neck removal
+3. Reduced the dimensions of the image to non-zero images.
+4. Winsorization using the 99.9$^{th}$ percentile
+6. Registration to the FLAIR image.
+7. Brain extraction using MALF.
+8. N4 bias field correction on the brain only.
+9. Registration to the MNI brain template
+
+```{r, echo=FALSE, message=FALSE}
+x = list.files(
+  path = "cross_sectional/MNI", pattern = ".nii.gz", 
+  recursive = TRUE, full.names = TRUE)
+mods = nii.stub(x, bn = TRUE)
+mods = sub("_N4.*", "", mods)
+mods = recode(mods, "GOLD_STANDARD" = "Gold_Standard",
+              brainmask = "Brain_Mask",
+       T1 = "T1", T1POST = "T1Post", T2 = "T2")
+df = tibble(file = x, mod = mods, id = basename(dirname(x)))
 df = df %>%
   mutate(file = paste0("[", mod, "](", file, ")"))
 df = spread(df, key = mod, value = file)
@@ -176,7 +206,7 @@ mods = gsub("study\\d_", "", mods)
 mods = recode(mods, 
               "gt" = "Gold_Standard",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-df = data_frame(file = x, mod = mods, 
+df = tibble(file = x, mod = mods, 
                 id = basename(dirname(x)),
                 study = sub(".*study(\\d).*", "\\1", x))
 df = df %>% 
@@ -204,7 +234,7 @@ mods = recode(mods,
               "gt" = "Gold_Standard",
               brainmask = "Brain_Mask",
        T1W = "T1", T1WKS = "T1Post", T2W = "T2")
-df = data_frame(file = x, mod = mods, 
+df = tibble(file = x, mod = mods, 
                 id = basename(dirname(x)),
                 study = sub(".*study(\\d).*", "\\1", x))
 df = df %>% 
