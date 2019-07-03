@@ -183,7 +183,7 @@ template. The images were processed using the following methodology:
 1.  N4 bias field correction
 2.  Neck removal
 3.  Reduced the dimensions of the image to non-zero images.
-4.  Winsorization using the 99.9\(^{th}\) percentile
+4.  Winsorization using the 99.9th percentile
 5.  Registration to the FLAIR image.
 6.  Brain extraction using MALF.
 7.  N4 bias field correction on the brain only.

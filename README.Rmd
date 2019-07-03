@@ -128,7 +128,7 @@ These images were are the processed data, and registered to an MNI template.  Th
 1. N4 bias field correction
 2. Neck removal
 3. Reduced the dimensions of the image to non-zero images.
-4. Winsorization using the 99.9$^{th}$ percentile
+4. Winsorization using the 99.9th percentile
 6. Registration to the FLAIR image.
 7. Brain extraction using MALF.
 8. N4 bias field correction on the brain only.
